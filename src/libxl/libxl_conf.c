@@ -2030,6 +2030,17 @@ libxlMakeVideo(virDomainDefPtr def, libxl_domain_config *d_config)
             break;
 #endif
 
+#ifdef LIBXL_HAVE_VIRTIO
+        case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+            b_info->u.hvm.vga.kind = LIBXL_VGA_INTERFACE_TYPE_VIRTIO;
+            if (def->videos[0]->vram < 128 * 1024) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("videoram must be at least 128MB for VIRTIO"));
+                return -1;
+            }
+            break;
+#endif
+
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("video type %s is not supported by libxl"),
